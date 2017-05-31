@@ -8,6 +8,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+
+
         <Button
             android:id="@+id/changeViewButton"
             android:layout_width="128dp"
@@ -16,7 +18,30 @@
             android:text="Change View"
             android:nestedScrollingEnabled="false" />
 
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Track Me"
+            android:layout_weight="1"
+            android:id="@+id/trackMe"
+            android:onClick="trackMe" />
+
     </LinearLayout>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/searchButton"
+        android:onClick="searchPlaces" />
+
+    <EditText
+
+        android:layout_width="326dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchField"
+        android:ems="10"
+        android:inputType="textPersonName"/>
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -24,7 +49,8 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="385dp"
-        android:layout_height="468dp"
+        android:layout_height="426dp"
         tools:context="com.example.zhanga7141.mytestapp.MapsActivity" />
+
 
 </LinearLayout>
