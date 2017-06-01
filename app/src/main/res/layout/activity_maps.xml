@@ -19,29 +19,28 @@
             android:nestedScrollingEnabled="false" />
 
         <Button
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Track Me"
-            android:layout_weight="1"
             android:id="@+id/trackMe"
             android:onClick="trackMe" />
 
     </LinearLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/searchButton"
-        android:onClick="searchPlaces" />
-
     <EditText
 
-        android:layout_width="326dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/searchField"
         android:ems="10"
         android:inputType="textPersonName"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/searchButton"
+        android:onClick="searchPlaces" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
