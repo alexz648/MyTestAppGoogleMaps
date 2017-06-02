@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:text="Track Me"
             android:id="@+id/trackMe"
-            android:onClick="trackMe" />
+            android:onClick="getLocation" />
 
     </LinearLayout>
 
