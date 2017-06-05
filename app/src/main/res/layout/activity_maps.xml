@@ -27,20 +27,12 @@
 
     </LinearLayout>
 
-    <EditText
-
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchField"
-        android:ems="10"
-        android:inputType="textPersonName"/>
-
     <Button
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Search"
-        android:id="@+id/searchButton"
-        android:onClick="searchPlaces" />
+        android:layout_width="wrap_content"
+        android:layout_height="64dp"
+        android:text="Clear All"
+        android:id="@+id/clearAll"
+        android:onClick="clearAll" />
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:map="http://schemas.android.com/apk/res-auto"
@@ -48,8 +40,23 @@
         android:id="@+id/map"
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="385dp"
-        android:layout_height="426dp"
+        android:layout_height="318dp"
         tools:context="com.example.zhanga7141.mytestapp.MapsActivity" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Search"
+        android:id="@+id/searchButton"
+        android:onClick="searchPlaces" />
+
+    <EditText
+
+        android:layout_width="187dp"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchField"
+        android:ems="10"
+        android:inputType="textPersonName" />
 
 
 </LinearLayout>
