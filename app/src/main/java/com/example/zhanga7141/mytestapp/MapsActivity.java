@@ -32,6 +32,7 @@ import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
@@ -47,6 +48,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private Location myLocation;
     private static final float MY_LOC_ZOOM_FACTOR = 20.0f;
     private boolean dotColor = false;
+    private int isTracking = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +83,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void getLocation(View v) {
+    public void getLocation() {
 
         try {
             locationManager = (LocationManager) getSystemService(LOCATION_SERVICE);
@@ -129,27 +131,30 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void trackingOff(View v) {
-        Log.d("MyMaps", "Tracking Off");
-        isGpsEnabled = !isGpsEnabled;
-        isNetworkEnabled = !isNetworkEnabled;
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager.removeUpdates(locationListenerNetwork);
-        Toast.makeText(this, "Tracking Off", Toast.LENGTH_SHORT).show();
-    }
+    public void track(View v) {
+        isTracking++;
 
-    public void trackMe(View view) {
 
-        if (isTracked == true) {
-            Toast.makeText(MapsActivity.this, "Currently getting your location", Toast.LENGTH_SHORT).show();
-            getLocation(view);
-            isTracked = false;
+        if (isTracking % 2 == 1) {
+            Log.d("MyMaps", "Tracking on");
+            Toast.makeText(MapsActivity.this, "Tracking on", Toast.LENGTH_SHORT).show();
+            getLocation();
         }
-        else if (isTracked == false) {
-            trackingOff(view);
-            isTracked = true;
+
+        else {
+            Log.d("MyMaps", "Tracking off");
+            Toast.makeText(MapsActivity.this, "Tracking off", Toast.LENGTH_SHORT).show();
+
+            if (ActivityCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(MapsActivity.this, android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+                Log.d("MyMaps", "Permission check failed");
+                Toast.makeText(MapsActivity.this, "Permission check failed", Toast.LENGTH_SHORT);
+                return;
+            }
+            locationManager.removeUpdates(locationListenerNetwork);
+            locationManager.removeUpdates(locationListenerGPS);
+            Log.d("MyMaps", "track: remove updates");
+            Toast.makeText(MapsActivity.this, "track: remove updates", Toast.LENGTH_SHORT);
+
         }
 
     }
@@ -157,20 +162,64 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     public void searchPlaces(View view) {
         EditText locationSearch = (EditText) findViewById(R.id.searchField);
         String location = locationSearch.getText().toString();
-        List<Address> addressList = null;
+        List<Address> addressList = new ArrayList<>();
+        List<Address> distanceList = new ArrayList<>();
 
-        if (location != null || !location.equals("")) {
+        //check for empty search
+        if (location.equals("")) {
+            Toast.makeText(MapsActivity.this, "Empty Search", Toast.LENGTH_SHORT).show();
+            return;
+        } else if (location != null || !location.equals("")) {
+            Log.d("MyMaps", "Starting Search");
             Geocoder geocoder = new Geocoder(this);
             try {
-                addressList = geocoder.getFromLocationName(location, 1);
-
+                //sets a 10 list search result
+                addressList = geocoder.getFromLocationName(location, 10);
+                Log.d("MyMaps", "10 max search result");
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title("Search Location"));
-            mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+
+            //calculates radius for every location add adds the ones that are 5 or under
+            for (int i = 0; i < addressList.size(); i++) {
+                Log.d("mymaps", "currently calculating distances");
+                Address currentAddress = addressList.get(i);
+
+                double earthRadius = 3958.75; // miles (or 6371.0 kilometers)
+                double dLat = Math.toRadians(currentAddress.getLatitude()-myLocation.getLatitude());
+                double dLng = Math.toRadians(currentAddress.getLongitude()-myLocation.getLongitude());
+                double sindLat = Math.sin(dLat / 2);
+                double sindLng = Math.sin(dLng / 2);
+                double a = Math.pow(sindLat, 2) + Math.pow(sindLng, 2)
+                        * Math.cos(Math.toRadians(myLocation.getLatitude())) * Math.cos(Math.toRadians(currentAddress.getLatitude()));
+                double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+                double dist = earthRadius * c;
+
+                //adds 5 mile radius
+                Log.d("mymaps","checking to see if radius is less than 5");
+                if (dist <= 5) {
+                    distanceList.add(addressList.get(i));
+                    Log.d("MyMaps", "radius is less than 5 and added it to distanceList");
+                } else {
+                    Log.d("mymaps","distance is not less than 5");
+                }
+            }
+
+            if (distanceList.size() == 0) {
+                Log.d("MyMaps", "no search results found");
+                Toast.makeText(MapsActivity.this, "No search results within 5 miles", Toast.LENGTH_SHORT).show();
+            }
+
+            //adds marker to every location 5 miles or less away
+            for (int i = 0; i < distanceList.size(); i++) {
+
+                Address address = distanceList.get(i);
+                LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+                Log.d("Mymaps", "currently adding markers");
+                mMap.addMarker(new MarkerOptions().position(latLng).title("Search Results"));
+                mMap.animateCamera(CameraUpdateFactory.newLatLng(latLng));
+            }
+
         }
     }
 
