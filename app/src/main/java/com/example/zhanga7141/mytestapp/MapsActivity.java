@@ -159,28 +159,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public void searchPlaces(View view) {
+    public void searchPlaces(View v) {
         EditText locationSearch = (EditText) findViewById(R.id.searchField);
         String location = locationSearch.getText().toString();
         List<Address> addressList = new ArrayList<>();
         List<Address> distanceList = new ArrayList<>();
 
-        //check for empty search
+        //checks to see if nothing is entered in the search so the app doesn't crash
         if (location.equals("")) {
-            Toast.makeText(MapsActivity.this, "Empty Search", Toast.LENGTH_SHORT).show();
+            Toast.makeText(MapsActivity.this, "No Search Entered", Toast.LENGTH_SHORT).show();
             return;
         } else if (location != null || !location.equals("")) {
-            Log.d("MyMaps", "Starting Search");
+            Log.d("MyMaps", "search feature started");
             Geocoder geocoder = new Geocoder(this);
             try {
-                //sets a 10 list search result
-                addressList = geocoder.getFromLocationName(location, 10);
-                Log.d("MyMaps", "10 max search result");
+                //sets a 100 list search result
+                addressList = geocoder.getFromLocationName(location, 100);
+                Log.d("Mymaps", "made a max 100 entry search result");
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            //calculates radius for every location add adds the ones that are 5 or under
+            //calculates radius for every location and adds the ones that are 5 or under
             for (int i = 0; i < addressList.size(); i++) {
                 Log.d("mymaps", "currently calculating distances");
                 Address currentAddress = addressList.get(i);
@@ -222,6 +222,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         }
     }
+
 
     LocationListener locationListenerGPS = new LocationListener() {
         @Override

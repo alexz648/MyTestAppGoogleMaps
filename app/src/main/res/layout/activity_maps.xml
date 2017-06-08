@@ -53,7 +53,7 @@
 
     <EditText
 
-        android:layout_width="187dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/searchField"
         android:ems="10"
